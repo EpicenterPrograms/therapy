@@ -8,17 +8,72 @@
 		<script src="https://epicenterprograms.github.io/standards/behavior/general.js"></script>
 		<script>
 			var S = Standards.general;
+
+			var leftBlip = new Audio("Left blip.ogg");
+			var rightBlip = new Audio("Right blip.ogg");
+
+			S.listen("start", "click", function () {
+				let circle = S.getId("movingCircle");
+				circle.style.left = "0em";
+				let interval = Number(S.getId("interval").value);
+				let duration = Number(S.getId("duration").value);
+				let timer = new S.Sound({ waveform: "square" });
+				leftBlip.play();
+				setTimeout(function () {
+					circle.style.transition = interval + "s";
+					circle.style.transitionTimingFunction = "linear";
+					circle.style.left = "calc(100% - 3em)";
+				}, 0);
+				setInterval(function () {
+					leftBlip.play();
+					circle.style.left = "calc(100% - 3em)";
+				}, interval * 2000);
+				setTimeout(function () {
+					rightBlip.play();
+					circle.style.left = "0%";
+					setInterval(function () {
+						rightBlip.play();
+						circle.style.left = "0%";
+					}, interval * 2000);
+				}, interval * 1000);
+				setTimeout(function () {
+					timer.play("e4g4");
+				}, duration * 50000);
+				setTimeout(function () {
+					circle.style.background = "red";
+					timer.play("g4c4e4g4");
+				}, duration * 60000);
+			});
 		</script>
 		<link rel="stylesheet" href="https://epicenterprograms.github.io/standards/formatting/foundation.css">
+		<style>
+			#movingCircle {
+				position: absolute;
+				width: 3em;
+				height: 3em;
+				border-radius: 1.5em;
+				background: #0f0;
+				left: calc(50% - 1.5em);
+			}
+		</style>
 	</head>
 	<body>
 		<h1 class="main-title">
 			EMDR
 		</h1>
-		<main>
+		<main style="position: relative">
 			<section>
-				Watch the circle.
+				Bounce interval (seconds): <input type="number" id="interval" value="1">
+				Duration (minutes): <input type="number" id="duration" value="6">
 			</section>
+			<section>
+				<button id="start">Start</button>
+			</section>
+			<br>
+			<br>
+			<div id="movingCircle"></div>
+			<br>
+			<br>
 		</main>
 	</body>
 </html>
